@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cyberbot War Room</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #000000;
+        --card: #0a0a0a;
+        --text: #f3f4f6;
+        --muted: #9ca3af;
+        --design: #00f2ff;
+        --importados: #10b981;
+        --locacao: #f59e0b;
+        --paraguai: #ff4b2b;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: Inter, Roboto, Arial, sans-serif;
+      }
+      .wrap { padding: 18px; display: grid; gap: 14px; }
+      .header { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+      .title { font-size: clamp(24px, 2vw, 34px); font-weight: 800; letter-spacing: .5px; }
+      .subtitle { color: var(--muted); font-size: 13px; }
+      .section-card {
+        background: var(--card);
+        border: 1px solid #1f2937;
+        border-radius: 14px;
+        padding: 14px;
+      }
+      .section-title {
+        color: var(--muted);
+        text-transform: uppercase;
+        font-size: 12px;
+        margin-bottom: 10px;
+        letter-spacing: .7px;
+      }
+      .grid { display: grid; grid-template-columns: repeat(5, minmax(160px, 1fr)); gap: 12px; }
+      .top-grid { display: grid; grid-template-columns: 1fr minmax(280px, 1.2fr) 1fr; gap: 12px; }
+      .kpi {
+        background: #050505;
+        border-radius: 12px;
+        padding: 12px;
+        border: 1px solid #1f2937;
+        position: relative;
+      }
+      .kpi.design { border-color: color-mix(in srgb, var(--design) 40%, #111 60%); box-shadow: 0 0 14px #00f2ff33 inset; }
+      .kpi.importados { border-color: color-mix(in srgb, var(--importados) 45%, #111 55%); box-shadow: 0 0 14px #10b98133 inset; }
+      .kpi.vestuario { border-color: color-mix(in srgb, #818cf8 45%, #111 55%); box-shadow: 0 0 14px #818cf833 inset; }
+      .kpi.locacao { border-color: color-mix(in srgb, var(--locacao) 45%, #111 55%); box-shadow: 0 0 14px #f59e0b33 inset; }
+      .kpi.outros { border-color: #374151; }
+      .kpi-tooltip {
+        position: absolute;
+        left: 10px;
+        top: calc(100% + 8px);
+        width: min(360px, 85vw);
+        max-height: 260px;
+        overflow: auto;
+        background: #0b1220;
+        border: 1px solid #334155;
+        border-radius: 10px;
+        padding: 8px;
+        z-index: 40;
+        display: none;
+        box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
+      }
+      .kpi:hover .kpi-tooltip { display: block; }
+      .kpi-tooltip-title {
+        font-size: 11px;
+        color: #cbd5e1;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .kpi-tooltip-item {
+        font-size: 12px;
+        color: #e2e8f0;
+        padding: 4px 0;
+        border-bottom: 1px solid #1f2937;
+      }
+      .kpi-tooltip-item:last-child { border-bottom: none; }
+      .revenue-card {
+        background: linear-gradient(135deg, #7c5a00 0%, #facc15 45%, #f59e0b 100%);
+        color: #111827;
+        border-radius: 14px;
+        padding: 14px;
+        border: 1px solid #fde68a;
+        box-shadow: 0 0 30px #fbbf2450;
+      }
+      .revenue-label {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: .8px;
+        text-transform: uppercase;
+        opacity: .9;
+      }
+      .revenue-value {
+        margin-top: 10px;
+        font-size: clamp(30px, 2.6vw, 54px);
+        line-height: 1;
+        font-weight: 800;
+      }
+      .lost-card .value {
+        color: #f87171;
+      }
+      .label { color: var(--muted); text-transform: uppercase; font-size: 11px; }
+      .value { margin-top: 8px; font-size: clamp(28px, 2.4vw, 48px); font-weight: 800; line-height: 1; }
+
+      .pipeline-grid { display: grid; grid-template-columns: repeat(2, minmax(220px, 1fr)); gap: 12px; }
+      .pipe-card { background: #050505; border: 1px solid #1f2937; border-radius: 12px; padding: 12px; }
+      .pipe-card.br { border-color: #10b98188; }
+      .pipe-card.py { border-color: #ff4b2b88; }
+      .money { font-size: clamp(26px, 2vw, 40px); font-weight: 800; margin-top: 8px; }
+      .progress-wrap { margin-top: 14px; background: #111827; border-radius: 999px; height: 18px; overflow: hidden; border: 1px solid #1f2937; }
+      .progress-row { height: 100%; display: flex; width: 100%; }
+      .progress-br { height: 100%; background: linear-gradient(90deg, #047857, #10b981); }
+      .progress-py { height: 100%; background: linear-gradient(90deg, #dc2626, #ff4b2b); }
+      .progress-legend { margin-top: 8px; color: var(--muted); font-size: 12px; display: flex; justify-content: space-between; gap: 8px; }
+
+      .alerts-card.pulse {
+        border-color: #ef4444;
+        animation: pulse-border 1.2s infinite;
+      }
+      @keyframes pulse-border {
+        0% { box-shadow: 0 0 0 0 #ef444499; }
+        70% { box-shadow: 0 0 0 10px #ef444400; }
+        100% { box-shadow: 0 0 0 0 #ef444400; }
+      }
+
+      table { width: 100%; border-collapse: collapse; }
+      th, td { text-align: left; border-bottom: 1px solid #1f2937; padding: 10px 8px; vertical-align: top; }
+      th { color: var(--muted); font-size: 12px; text-transform: uppercase; }
+      .badge { font-weight: 700; color: var(--design); }
+      .lead-id {
+        color: #93c5fd;
+        text-decoration: underline;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .lead-id.copied {
+        color: #22c55e;
+        text-decoration: none;
+      }
+      .prio {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 2px 8px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .prio.p1 { background: #7f1d1d; color: #fecaca; }
+      .prio.p2 { background: #78350f; color: #fde68a; }
+      .prio.p3 { background: #1e3a8a; color: #bfdbfe; }
+      .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+      .btn {
+        border: 1px solid #374151;
+        background: #111827;
+        color: #e5e7eb;
+        border-radius: 8px;
+        padding: 4px 8px;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      .btn.close { border-color: #f59e0b; color: #fbbf24; }
+      .btn.archive { border-color: #ef4444; color: #f87171; }
+      .btn.preview { border-color: #22d3ee; color: #67e8f9; }
+      .btn.chat { border-color: #22c55e; color: #86efac; }
+      .insight-compact {
+        max-width: 420px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.72);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+        padding: 16px;
+      }
+      .modal-backdrop.open { display: flex; }
+      .modal {
+        width: min(860px, 96vw);
+        max-height: 86vh;
+        overflow: auto;
+        background: #0b1220;
+        border: 1px solid #334155;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+      }
+      .modal-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        border-bottom: 1px solid #1f2937;
+      }
+      .modal-title { font-size: 13px; color: #cbd5e1; text-transform: uppercase; }
+      .modal-close {
+        border: 1px solid #475569;
+        background: #111827;
+        color: #e5e7eb;
+        border-radius: 8px;
+        padding: 4px 8px;
+        cursor: pointer;
+      }
+      .modal-body {
+        padding: 14px;
+        color: #e5e7eb;
+        line-height: 1.5;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+      .floating-controls {
+        position: fixed;
+        right: 18px;
+        bottom: 18px;
+        display: grid;
+        gap: 8px;
+        z-index: 30;
+      }
+      .fab {
+        width: 50px;
+        height: 50px;
+        border-radius: 999px;
+        border: 1px solid #374151;
+        background: #111827;
+        color: #f3f4f6;
+        font-size: 22px;
+        cursor: pointer;
+        box-shadow: 0 6px 16px #00000066;
+      }
+      .fab:hover { filter: brightness(1.1); }
+
+      @media (max-width: 1200px) {
+        .grid { grid-template-columns: repeat(3, minmax(150px, 1fr)); }
+        .top-grid { grid-template-columns: 1fr; }
+      }
+      @media (max-width: 860px) {
+        .grid { grid-template-columns: repeat(2, minmax(150px, 1fr)); }
+        .pipeline-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="header">
+        <div>
+          <div class="title">Cyberbot War Room</div>
+          <div id="meta" class="subtitle">Carregando...</div>
+        </div>
+      </div>
+
+      <section class="top-grid">
+        <div class="section-card lost-card">
+          <div class="section-title">Leads Perdidos</div>
+          <div id="lost_leads" class="value">0</div>
+          <div class="subtitle">deal_closed: 0 e arquivados</div>
+        </div>
+        <div class="revenue-card">
+          <div class="revenue-label">FATURAMENTO MENSAL</div>
+          <div id="monthly_revenue" class="revenue-value">R$ 0,00</div>
+        </div>
+        <div class="section-card">
+          <div class="section-title">Atualização</div>
+          <div class="value" id="refresh_count">20s</div>
+          <div class="subtitle">Refresh automático</div>
+        </div>
+      </section>
+
+      <section class="section-card">
+        <div class="section-title">Leads por Nicho (24h)</div>
+        <div class="grid">
+          <div id="kpi_design" class="kpi design"><div class="label">Design/Dev</div><div id="n_design" class="value">0</div><div class="kpi-tooltip"></div></div>
+          <div id="kpi_importados" class="kpi importados"><div class="label">Importados</div><div id="n_importados" class="value">0</div><div class="kpi-tooltip"></div></div>
+          <div id="kpi_vestuario" class="kpi vestuario"><div class="label">Vestuário</div><div id="n_vestuario" class="value">0</div><div class="kpi-tooltip"></div></div>
+          <div id="kpi_locacao" class="kpi locacao"><div class="label">Locação</div><div id="n_locacao" class="value">0</div><div class="kpi-tooltip"></div></div>
+          <div id="kpi_outros" class="kpi outros"><div class="label">Outros</div><div id="n_outros" class="value">0</div><div class="kpi-tooltip"></div></div>
+        </div>
+      </section>
+
+      <section class="section-card">
+        <div class="section-title">Pipeline de Fornecedores (Hoje)</div>
+        <div class="pipeline-grid">
+          <div class="pipe-card br">
+            <div class="label">DROPSHIPPING_BR</div>
+            <div id="p_br" class="money">R$ 0,00</div>
+            <div id="c_br" class="subtitle">0 mensagens</div>
+          </div>
+          <div class="pipe-card py">
+            <div class="label">PARAGUAI_DOLLAR</div>
+            <div id="p_py" class="money">R$ 0,00</div>
+            <div id="c_py" class="subtitle">0 mensagens</div>
+          </div>
+        </div>
+        <div class="progress-wrap" aria-label="Comparativo pipeline">
+          <div class="progress-row">
+            <div id="bar_br" class="progress-br" style="width: 50%"></div>
+            <div id="bar_py" class="progress-py" style="width: 50%"></div>
+          </div>
+        </div>
+        <div class="progress-legend">
+          <span>BR <strong id="pct_br">50%</strong></span>
+          <span>PARAGUAI <strong id="pct_py">50%</strong></span>
+        </div>
+      </section>
+
+      <section id="alerts-card" class="section-card alerts-card">
+        <div class="section-title">Alertas de Leads (últimos 5)</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Contato</th>
+              <th>Data/Hora</th>
+              <th>Nicho</th>
+              <th>Prioridade</th>
+              <th>Mensagem</th>
+              <th>Insight</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="alerts"></tbody>
+        </table>
+      </section>
+    </div>
+
+    <div class="floating-controls">
+      <button id="mute_btn" class="fab" title="Ativar/Desativar som">🔊</button>
+      <button id="fs_btn" class="fab" title="Tela cheia">🖥️</button>
+    </div>
+
+    <div id="preview_backdrop" class="modal-backdrop">
+      <div class="modal">
+        <div class="modal-head">
+          <div class="modal-title">Insight Completo</div>
+          <button id="preview_close" class="modal-close">X</button>
+        </div>
+        <div id="preview_body" class="modal-body"></div>
+      </div>
+    </div>
+
+    <script>
+      let lastLeadSignature = '';
+      let lastSupplierCount = 0;
+      let soundEnabled = true;
+      const REFRESH_MS = 20000;
+      const insightPreviewCache = {};
+
+      function money(v) {
+        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(v || 0));
+      }
+      function fmtTs(ts) {
+        if (!ts) return '-';
+        return new Date(ts).toLocaleString('pt-BR', { hour12: false });
+      }
+      function fmtTsCompact(ts) {
+        if (!ts) return '-';
+        const d = new Date(ts);
+        if (Number.isNaN(d.getTime())) return '-';
+        const dd = String(d.getDate()).padStart(2, '0');
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const hh = String(d.getHours()).padStart(2, '0');
+        const mi = String(d.getMinutes()).padStart(2, '0');
+        return `${dd}/${mm} ${hh}:${mi}`;
+      }
+      function displayContact(senderId) {
+        const raw = String(senderId || '').trim();
+        if (!raw) return 'Cliente';
+        if (raw === 'eu') return 'Eu';
+        // Formato salvo: "Nome (551899999999)"
+        const named = raw.match(/^(.*)\(([^)]+)\)\s*$/);
+        if (named) {
+          const name = String(named[1] || '').trim();
+          const num = String(named[2] || '').trim();
+          return name ? `${name} (${num})` : num;
+        }
+        // Fallback para IDs WhatsApp
+        if (raw.endsWith('@c.us')) return raw.replace('@c.us', '');
+        if (raw.endsWith('@lid')) return raw.replace('@lid', '');
+        if (raw.endsWith('@g.us')) return raw.replace('@g.us', '');
+        return raw;
+      }
+      function escapeHtml(text) {
+        return String(text || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      function shortText(text, max = 90) {
+        const normalized = String(text || '').replace(/\s+/g, ' ').trim();
+        if (normalized.length <= max) return normalized;
+        return `${normalized.slice(0, max - 3)}...`;
+      }
+      function openPreviewModal(fullText) {
+        const backdrop = document.getElementById('preview_backdrop');
+        const body = document.getElementById('preview_body');
+        body.textContent = String(fullText || '(sem conteúdo)');
+        backdrop.classList.add('open');
+      }
+      function closePreviewModal() {
+        const backdrop = document.getElementById('preview_backdrop');
+        backdrop.classList.remove('open');
+      }
+      function playPing() {
+        if (!soundEnabled) return;
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = 820;
+          gain.gain.value = 0.0001;
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          const now = ctx.currentTime;
+          gain.gain.exponentialRampToValueAtTime(0.02, now + 0.01);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+          osc.start(now);
+          osc.stop(now + 0.19);
+        } catch (_e) {}
+      }
+
+      async function closeLead(leadId) {
+        const input = prompt('Digite o valor da venda (R$):');
+        if (input == null) return;
+        const normalized = String(input).trim().replace(/\./g, '').replace(',', '.');
+        const revenue = Number(normalized);
+        if (!Number.isFinite(revenue) || revenue < 0) {
+          alert('Valor inválido.');
+          return;
+        }
+        const res = await fetch(`/api/leads/${leadId}/close`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ revenue })
+        });
+        const data = await res.json();
+        if (!res.ok || !data?.ok) {
+          throw new Error(data?.error || 'Falha ao fechar venda');
+        }
+      }
+
+      async function archiveLead(leadId) {
+        const ok = confirm('Arquivar este lead como perdido?');
+        if (!ok) return;
+        const res = await fetch(`/api/leads/${leadId}/archive`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        if (!res.ok || !data?.ok) {
+          throw new Error(data?.error || 'Falha ao arquivar lead');
+        }
+      }
+
+      async function openLeadChat(senderId) {
+        const sid = String(senderId || '').trim();
+        if (!sid) {
+          alert('Contato indisponível para abrir chat.');
+          return;
+        }
+
+        try {
+          const url = `/api/resolve-contact?sender_id=${encodeURIComponent(sid)}`;
+          const res = await fetch(url);
+          const data = await res.json();
+          if (res.ok && data?.ok && data?.wa_url) {
+            window.open(data.wa_url, '_blank', 'noopener,noreferrer');
+            return;
+          }
+        } catch (_e) {
+          // cai no fallback abaixo
+        }
+
+        // Fallback para casos em que o WhatsApp não fornece resolução (ex.: alguns @lid).
+        try {
+          await navigator.clipboard.writeText(sid);
+          alert(`Não foi possível resolver automaticamente o contato (${sid}). ID copiado para a área de transferência.`);
+        } catch (_e) {
+          alert(`Não foi possível resolver automaticamente o contato: ${sid}`);
+        }
+      }
+
+      async function load() {
+        try {
+          const res = await fetch('/api/dashboard-stats');
+          const data = await res.json();
+          if (!data?.ok) throw new Error('API retornou erro');
+
+          const v = data.volume_by_nicho || {};
+          document.getElementById('n_design').textContent = v.DESIGN_DEV || 0;
+          document.getElementById('n_importados').textContent = v.IMPORTADOS || 0;
+          document.getElementById('n_vestuario').textContent = v.VESTUARIO || 0;
+          document.getElementById('n_locacao').textContent = v.LOCACAO || 0;
+          document.getElementById('n_outros').textContent = v.OUTROS || 0;
+          renderNichoTooltips(data.contacts_by_nicho || {});
+          document.getElementById('monthly_revenue').textContent = money(data.monthly_revenue || 0);
+          document.getElementById('lost_leads').textContent = Number(data.lost_leads_count || 0);
+
+          const p = data.supplier_pipeline_today || {};
+          const br = p.DROPSHIPPING_BR || {};
+          const py = p.PARAGUAI_DOLLAR || {};
+          const brCount = Number(br.message_count || 0);
+          const pyCount = Number(py.message_count || 0);
+          const totalCount = brCount + pyCount;
+          const brPct = totalCount > 0 ? Math.round((brCount / totalCount) * 100) : 50;
+          const pyPct = totalCount > 0 ? 100 - brPct : 50;
+
+          document.getElementById('p_br').textContent = money(br.total_price_calculated);
+          document.getElementById('c_br').textContent = `${brCount} mensagens`;
+          document.getElementById('p_py').textContent = money(py.total_price_calculated);
+          document.getElementById('c_py').textContent = `${pyCount} mensagens`;
+          document.getElementById('bar_br').style.width = `${brPct}%`;
+          document.getElementById('bar_py').style.width = `${pyPct}%`;
+          document.getElementById('pct_br').textContent = `${brPct}%`;
+          document.getElementById('pct_py').textContent = `${pyPct}%`;
+
+          const alerts = data.lead_alerts || [];
+          const tbody = document.getElementById('alerts');
+          Object.keys(insightPreviewCache).forEach((k) => { delete insightPreviewCache[k]; });
+          tbody.innerHTML = '';
+          let hasPriority1 = false;
+          if (alerts.length === 0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = '<td colspan="7">Sem alertas no período.</td>';
+            tbody.appendChild(tr);
+          } else {
+            alerts.forEach((a) => {
+              const prio = Number(a.priority || 2);
+              if (prio === 1) hasPriority1 = true;
+              const leadId = Number(a.id || 0);
+              insightPreviewCache[String(leadId)] = String(a.insight || '');
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
+                <td><span class="lead-id" data-action="copy-contact" data-id="${leadId}" data-contact="${escapeHtml(displayContact(a.sender_id || ''))}" title="Clique para copiar contato">${escapeHtml(displayContact(a.sender_id || ''))}</span></td>
+                <td>${fmtTsCompact(a.timestamp)}</td>
+                <td><span class="badge">${escapeHtml(a.nicho || '-')}</span></td>
+                <td><span class="prio p${prio}">P${prio}</span></td>
+                <td>${escapeHtml(a.raw_content || '')}</td>
+                <td>
+                  <div class="insight-compact">${escapeHtml(shortText(a.insight || '', 96))}</div>
+                  <button class="btn preview" data-action="preview" data-id="${leadId}">Preview</button>
+                </td>
+                <td>
+                  <div class="actions">
+                    <button class="btn close" data-action="close" data-id="${leadId}">FECHAR VENDA</button>
+                    <button class="btn archive" data-action="archive" data-id="${leadId}">ARQUIVAR</button>
+                    <button class="btn chat" data-action="chat" data-id="${leadId}" data-sender="${escapeHtml(a.sender_id || '')}">CHAMAR</button>
+                  </div>
+                </td>
+              `;
+              tbody.appendChild(tr);
+            });
+          }
+
+          document.getElementById('alerts-card').classList.toggle('pulse', hasPriority1);
+
+          const latestLead = alerts[0]?.timestamp || '';
+          const leadSignature = `${latestLead}|${alerts.length}`;
+          const supplierCount = brCount + pyCount;
+          if (lastLeadSignature && (leadSignature !== lastLeadSignature || supplierCount > lastSupplierCount)) {
+            playPing();
+          }
+          lastLeadSignature = leadSignature;
+          lastSupplierCount = supplierCount;
+
+          document.getElementById('meta').textContent = `Atualizado em ${fmtTs(data.generated_at)} | Janela: ${data.window || '24h'}`;
+        } catch (err) {
+          document.getElementById('meta').textContent = `Falha ao carregar dashboard: ${err.message || err}`;
+        }
+      }
+
+      function renderNichoTooltips(contactsByNicho) {
+        const map = {
+          DESIGN_DEV: 'kpi_design',
+          IMPORTADOS: 'kpi_importados',
+          VESTUARIO: 'kpi_vestuario',
+          LOCACAO: 'kpi_locacao',
+          OUTROS: 'kpi_outros'
+        };
+        Object.entries(map).forEach(([nicho, cardId]) => {
+          const card = document.getElementById(cardId);
+          if (!card) return;
+          const tooltip = card.querySelector('.kpi-tooltip');
+          if (!tooltip) return;
+          const items = Array.isArray(contactsByNicho[nicho]) ? contactsByNicho[nicho] : [];
+          if (items.length === 0) {
+            tooltip.innerHTML = `<div class="kpi-tooltip-title">${nicho} • contatos</div><div class="kpi-tooltip-item">Sem contatos no período.</div>`;
+            return;
+          }
+          const rows = items
+            .map((it) => `<div class="kpi-tooltip-item">${escapeHtml(it.sender_id)} — ${Number(it.total_messages || 0)} msg</div>`)
+            .join('');
+          tooltip.innerHTML = `<div class="kpi-tooltip-title">${nicho} • leads únicos (24h)</div>${rows}`;
+        });
+      }
+
+      function bindControls() {
+        const muteBtn = document.getElementById('mute_btn');
+        const fsBtn = document.getElementById('fs_btn');
+        const alertsTable = document.getElementById('alerts');
+        const previewBackdrop = document.getElementById('preview_backdrop');
+        const previewCloseBtn = document.getElementById('preview_close');
+        muteBtn.addEventListener('click', () => {
+          soundEnabled = !soundEnabled;
+          muteBtn.textContent = soundEnabled ? '🔊' : '🔇';
+        });
+        fsBtn.addEventListener('click', async () => {
+          try {
+            if (!document.fullscreenElement) {
+              await document.documentElement.requestFullscreen();
+            } else {
+              await document.exitFullscreen();
+            }
+          } catch (_e) {}
+        });
+        alertsTable.addEventListener('click', async (evt) => {
+          const target = evt.target;
+          if (!(target instanceof HTMLElement)) return;
+          const action = target.getAttribute('data-action');
+          const id = Number(target.getAttribute('data-id') || 0);
+          if (!action) return;
+          try {
+            if (action === 'preview') {
+              if (!Number.isFinite(id) || id <= 0) return;
+              openPreviewModal(insightPreviewCache[String(id)] || '');
+            } else if (action === 'close') {
+              if (!Number.isFinite(id) || id <= 0) return;
+              await closeLead(id);
+            } else if (action === 'archive') {
+              if (!Number.isFinite(id) || id <= 0) return;
+              await archiveLead(id);
+            } else if (action === 'chat') {
+              const sender = target.getAttribute('data-sender') || '';
+              await openLeadChat(sender);
+            } else if (action === 'copy-contact') {
+              const contact = target.getAttribute('data-contact') || '';
+              if (!contact) return;
+              try {
+                await navigator.clipboard.writeText(contact);
+                target.classList.add('copied');
+                const originalText = target.textContent || contact;
+                target.textContent = 'copiado!';
+                setTimeout(() => {
+                  target.textContent = originalText;
+                  target.classList.remove('copied');
+                }, 900);
+              } catch (_e) {
+                alert('Não foi possível copiar o ID.');
+              }
+            }
+            if (!['preview', 'copy-id'].includes(action)) await load();
+          } catch (err) {
+            alert(err.message || String(err));
+          }
+        });
+
+        previewCloseBtn.addEventListener('click', closePreviewModal);
+        previewBackdrop.addEventListener('click', (evt) => {
+          if (evt.target === previewBackdrop) closePreviewModal();
+        });
+      }
+
+      function startRefreshCounter() {
+        const el = document.getElementById('refresh_count');
+        let remain = Math.round(REFRESH_MS / 1000);
+        setInterval(() => {
+          remain -= 1;
+          if (remain <= 0) remain = Math.round(REFRESH_MS / 1000);
+          el.textContent = `${remain}s`;
+        }, 1000);
+      }
+
+      bindControls();
+      startRefreshCounter();
+      load();
+      setInterval(load, REFRESH_MS);
+    </script>
+  </body>
+</html>
